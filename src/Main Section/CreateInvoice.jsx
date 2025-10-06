@@ -8,9 +8,8 @@ import jsPDF from "jspdf";
 
 
 
-
-
 function CreateInvoice() {
+  
   const pdfRef = useRef()
   const componentRef = useRef(null)
   const [paymentMethod, setPaymentMethod] = useState("full");
@@ -139,6 +138,7 @@ function CreateInvoice() {
 
   return (
     <div className='flex   mx-auto h-screen overflow-hidden bg-black text-white  font-stretch-ultra-condensed '>
+     
       <SideNav />
       <main className="flex-1 flex flex-col p-4 overflow-hidden">
 
@@ -467,9 +467,12 @@ function CreateInvoice() {
             className="w-1/2 rounded-lg overflow-y-auto shadow-2xl border"
             ref={pdfRef}
             style={{
+                lineHeight: "2",       
+                letterSpacing: "4.4px",   
               width: "210mm",
               borderRadius: "0.5rem",
               minHeight: "297mm",
+              fontFamily:"sans-serif",
 
               backgroundImage: bgImage ? `url(${URL.createObjectURL(bgImage)})` : "none",
               backgroundSize: "cover",
@@ -593,7 +596,7 @@ function CreateInvoice() {
                 </div>
               )}
 
-              <div style={{ marginTop: "3rem", paddingTop: "1.5rem", borderTop: "1px solid #D1D5DB", textAlign: "center" }}>
+              <div style={{ marginTop: "3rem", paddingTop: "1.5rem",  textAlign: "center" }}>
                 <p style={{ fontSize: "0.875rem", color: "#374151" }}>Thank you for your business!</p>
               </div>
             </div>

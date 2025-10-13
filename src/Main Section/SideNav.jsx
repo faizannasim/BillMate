@@ -10,13 +10,7 @@ function SideNav() {
       <nav className="flex flex-col gap-3 flex-1">
         
         <div>
-          <h1
-            className="flex items-center p-1 text-[20px] uppercase text-gray-400 tracking-wider mb-2 font-stretch-ultra-condensed "
          
-          >
-            Navigation
-          </h1>
-
          
           <a
             href="#"

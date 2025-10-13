@@ -2,17 +2,22 @@ import React, { useEffect, useRef, useState } from "react";
 import { Upload, Plus, X, FileText, Download, AlertCircle, Import } from "lucide-react";
 import SideNav from "./SideNav";
 import html2canvas from "html2canvas";
+import { QRCodeCanvas } from "qrcode.react";
+
 import jsPDF from "jspdf";
 
 
 
 
 
+
 function CreateInvoice() {
-  
+
+
+
   const pdfRef = useRef()
   const componentRef = useRef(null)
-  const [paymentMethod, setPaymentMethod] = useState("full");
+  const [paymentMethod, setPaymentMethod] = useState("Full");
 
 
   const [companyName, setCompanyName] = useState("Invoicely Ltd");
@@ -86,18 +91,37 @@ function CreateInvoice() {
   const taxAmount = (taxableAmount * taxRate) / 100;
   const total = taxableAmount + taxAmount;
 
+
   const currencySymbols = {
-    USD: "$",
-    EUR: "€",
-    GBP: "£",
+
     INR: "₹",
   };
 
   const formatCurrency = (amount) => {
-    return `${currencySymbols[currency] || "$"}${amount.toFixed(2)}`;
-
+    return `${currencySymbols[currency] || "₹"}${amount.toFixed(2)}`;
 
   };
+  
+const qrData = `
+Invoice Number: ${invoiceNumber}
+Client: ${clientName}
+Address: ${clientAddress}
+Phone: ${clientPhone}
+Issue Date: ${issuedDate}
+Due Date: ${dueDate}
+
+Items:
+${items.map(item => `${item.item} - ${item.qty} x ${formatCurrency(item.price)} = ${formatCurrency(item.qty * item.price)}`).join("\n")}
+
+Subtotal: ${formatCurrency(subtotal)}
+Discount: ${formatCurrency(discountAmount)}
+Tax: ${formatCurrency(taxAmount)}
+Total: ${formatCurrency(total)}
+Payment Method: ${paymentMethod}
+`;
+
+
+
 
   //   useEffect(()=>{
   //     const StoredTheme = localStorage.getItem("theme") || "dark"
@@ -138,7 +162,7 @@ function CreateInvoice() {
 
   return (
     <div className='flex   mx-auto h-screen overflow-hidden bg-black text-white  font-stretch-ultra-condensed '>
-     
+
       <SideNav />
       <main className="flex-1 flex flex-col p-4 overflow-hidden">
 
@@ -260,9 +284,11 @@ function CreateInvoice() {
 
 
             <section className="space-y-4">
+
               <h3 className="text-lg font-semibold text-white">Invoice Details</h3>
 
               <div className="grid grid-cols-2 gap-4">
+
                 <div>
                   <label className="block text-sm text-gray-400 mb-1">Invoice Number</label>
                   <input
@@ -464,19 +490,19 @@ function CreateInvoice() {
 
 
           <div
-            className="w-1/2 rounded-lg overflow-y-auto shadow-2xl border"
             ref={pdfRef}
             style={{
-                lineHeight: "2",       
-                letterSpacing: "4.4px",   
-              width: "210mm",
-              borderRadius: "0.5rem",
-              minHeight: "297mm",
-              fontFamily:"sans-serif",
-
+              transform: "scale(0.73)",
+              transformOrigin: "top ",
+              width: "210mm",                    // A4 width
+              minHeight: "297mm",                // A4 height
+              backgroundColor: "white",
+              borderRadius: "8px",
+              overflow: "hidden",
               backgroundImage: bgImage ? `url(${URL.createObjectURL(bgImage)})` : "none",
               backgroundSize: "cover",
               backgroundPosition: "center",
+              fontFamily: "Allura",
             }}
           >
             <div className="p-8 min-h-full" style={{ backgroundColor: "rgba(255,255,255,0.95)" }}>
@@ -490,7 +516,7 @@ function CreateInvoice() {
                     />
                   )}
                   <div>
-                    <h1 style={{ fontSize: "1.875rem", fontWeight: "700", color: "#6C63FF", marginBottom: "0.5rem" }}>INVOICE</h1>
+                    <h1 style={{ fontSize: "1.875rem", fontWeight: "700", color: "#333333", marginBottom: "0.5rem" }}>INVOICE</h1>
                     <div style={{ fontSize: "0.875rem", lineHeight: "1.25rem", color: "#374151" }}>
                       <p style={{ fontWeight: "600" }}>{invoiceNumber}</p>
                       {issuedDate && <p>Issued: {new Date(issuedDate).toLocaleDateString()}</p>}
@@ -539,7 +565,7 @@ function CreateInvoice() {
               <div className="mb-8">
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
-                    <tr style={{ backgroundColor: "#6C63FF", color: "#FFFFFF" }}>
+                    <tr style={{ backgroundColor: "#58427C", color: "#CFE8F3" }}>
                       <th style={{ padding: "0.75rem 1rem", textAlign: "left", fontWeight: "600" }}>Description</th>
                       <th style={{ padding: "0.75rem 1rem", textAlign: "center", fontWeight: "600" }}>Qty</th>
                       <th style={{ padding: "0.75rem 1rem", textAlign: "right", fontWeight: "600" }}>Rate</th>
@@ -589,16 +615,30 @@ function CreateInvoice() {
                 </div>
               </div>
 
+
+              {paymentMethod && (
+                <div style={{ marginTop: "2rem" }}>
+                  <h3 style={{ fontSize: "1.115rem", fontWeight: "600", marginBottom: "0.5rem", color: "#374151" }}>Payment Method</h3>
+                  <p style={{ fontSize: "0.875rem", color: "#374151" }}>{paymentMethod}</p>
+                </div>
+              )}
               {additionalInfo && (
                 <div style={{ borderTop: "1px solid #D1D5DB", paddingTop: "1.5rem" }}>
-                  <h3 style={{ fontSize: "1.125rem", fontWeight: "600", marginBottom: "0.75rem", color: "#374151" }}>Additional Information</h3>
+                  <h3 style={{ fontSize: "1rem", fontWeight: "400", marginBottom: "0.75rem", color: "#374151" }}>Additional Information</h3>
                   <div style={{ fontSize: "0.875rem", whiteSpace: "pre-wrap", color: "#374151" }}>{additionalInfo}</div>
                 </div>
               )}
 
-              <div style={{ marginTop: "3rem", paddingTop: "1.5rem",  textAlign: "center" }}>
+              <div style={{ marginTop: "2rem",  }}>
+                <QRCodeCanvas value={qrData} size={128} fgColor="#000000" bgColor="#ffffff" />
+                <p style={{ fontSize: "0.8rem", color: "#374151" }}>Scan to see invoice details</p>
+              </div>
+
+
+              <div style={{ marginTop: "3rem", paddingTop: "1.5rem", textAlign: "center" }}>
                 <p style={{ fontSize: "0.875rem", color: "#374151" }}>Thank you for your business!</p>
               </div>
+
             </div>
           </div>
 

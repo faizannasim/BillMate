@@ -221,6 +221,7 @@ function Home() {
       
             <motion.p
               className="text-6xl sm:text-8xl md:text-9xl font-stretch-extra-expanded break-words"
+
               initial={{ opacity: 0, scale: 0.5 }}
               whileInView={{ opacity: 1, scale: 1 }}
               drag
@@ -228,6 +229,7 @@ function Home() {
               transition={{ duration: 1, ease: "easeOut" }}
               viewport={{ once: true }}
               style={{
+                fontFamily:"initial",
                 backgroundImage: `url(${car})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
